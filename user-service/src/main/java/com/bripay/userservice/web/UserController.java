@@ -39,7 +39,7 @@ public class UserController {
     public ResponseEntity<UserDto> save(@Valid @RequestBody UserDto userDto){
         return ResponseEntity.ok(userService.save(userDto));
     }
-
+    // modificar el codgio de respuesta
     /** Actualizar Usuario **/
     @PutMapping
     public ResponseEntity<UserDto> update(@Valid @RequestBody UserDto userDto){
@@ -52,5 +52,5 @@ public class UserController {
         userService.deleteById(id);
 
         return ResponseEntity.ok().build();
-    }
+    } // retornar un 204.
 }
