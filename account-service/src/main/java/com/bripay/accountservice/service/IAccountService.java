@@ -10,6 +10,7 @@ public interface IAccountService {
      * Consultas
      **/
     AccountDto findById(Long id);
+    AccountDto findByNumberAccount(String numberAcount);
     List<AccountDto> findAllAccountDto();
     List<AccountDto> findAllAccountByUsername(String username);
 

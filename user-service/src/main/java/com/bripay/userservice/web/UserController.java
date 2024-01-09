@@ -5,6 +5,7 @@ import com.bripay.commonsservice.dto.UserDto;
 import com.bripay.userservice.service.IUserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +51,6 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id){
         userService.deleteById(id);
-
-        return ResponseEntity.ok().build();
-    } // retornar un 204.
+        return ResponseEntity.noContent().build();
+    }
 }

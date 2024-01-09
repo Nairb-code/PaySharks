@@ -18,7 +18,7 @@ public interface IUserClientFeign {
 
     /** Obtener Usuario por Username. **/
     @GetMapping("/api/v1/users/username/{username}")
-    public ResponseEntity<UserDto> findByUsername(@PathVariable String username); //modificar responseEntity por Optional.
+        public ResponseEntity<UserDto> findByUsername(@PathVariable String username); //modificar responseEntity por Optional.
 
     /** Obtener todas los Usuarios.  **/
     @GetMapping("/api/v1/users")

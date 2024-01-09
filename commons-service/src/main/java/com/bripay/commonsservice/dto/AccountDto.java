@@ -17,7 +17,7 @@ import java.io.Serializable;
 public class AccountDto implements Serializable {
     private Long id;
 
-    @Column(length = 10 ,nullable = false, unique = true)
+    @Column(length = 6 ,nullable = false, unique = true)
     @Size(min = 6, max = 6, message = "La cuenta debe contener 6 digitos")
     @NotBlank(message = "The account can't be blank")
     @Pattern(regexp = "0*[1-9][0-9]*", message = "La cuenta debe contener solo caracteres numéricos y puede empezar con ceros")

@@ -46,6 +46,15 @@ public class AccountService implements IAccountService{
     }
 
     @Override
+    public AccountDto findByNumberAccount(String numberAcount) {
+        AccountEntity accountEntity = accountRepository.findByNumberAccount(numberAcount).orElseThrow(
+                () -> new ResourceNotFoundException("The account '" + numberAcount + "' is not registered.")
+        );
+
+        return mapper.convertValue(accountEntity, AccountDto.class);
+    }
+
+    @Override
     public List<AccountDto> findAllAccountDto() {
         List<AccountEntity> listAccountEntity = accountRepository.findAll();
         List<AccountDto> listAccountDto = new ArrayList<>();

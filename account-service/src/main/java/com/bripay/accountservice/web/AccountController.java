@@ -2,7 +2,6 @@ package com.bripay.accountservice.web;
 
 import com.bripay.accountservice.service.IAccountService;
 import com.bripay.commonsservice.dto.AccountDto;
-import com.bripay.commonsservice.entity.AccountEntity;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +20,12 @@ public class AccountController {
     @GetMapping("/{id}")
     public ResponseEntity<AccountDto> findById(@PathVariable Long id){
         return ResponseEntity.ok(accountService.findById(id));
+    }
+
+    /** Obtener la Cuenta por el numero de cuenta.  **/
+    @GetMapping("/account/{numberAccount}")
+    public ResponseEntity<AccountDto> findByNumberAccount(@PathVariable String numberAccount){
+        return ResponseEntity.ok(accountService.findByNumberAccount(numberAccount));
     }
 
     /** Obtener todas las Cuentas Dto.  **/
