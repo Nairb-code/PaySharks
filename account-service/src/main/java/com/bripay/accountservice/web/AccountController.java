@@ -4,6 +4,7 @@ import com.bripay.accountservice.service.IAccountService;
 import com.bripay.commonsservice.dto.AccountDto;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,6 +59,6 @@ public class AccountController {
     public ResponseEntity<Void> deleteById(@PathVariable Long id){
         accountService.deleteById(id);
 
-        return ResponseEntity.ok().build();
-    } // retornar 204.
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -1,6 +1,7 @@
 package com.bripay.commonsservice.dto;
 
 import com.bripay.commonsservice.enums.PaymentMethod;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -41,7 +42,6 @@ public class PaymentDto implements Serializable {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    @NotNull(message = "The payment date can't be empty")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime paymentDate;
+    @JsonFormat(pattern = "ddMMyyyy HH:mm:ss")
+    private Date paymentDate;
 }

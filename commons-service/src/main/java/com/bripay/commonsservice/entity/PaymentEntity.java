@@ -1,15 +1,15 @@
 package com.bripay.commonsservice.entity;
 
 import com.bripay.commonsservice.enums.PaymentMethod;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Getter @Setter
@@ -40,7 +40,6 @@ public class PaymentEntity {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    @NotNull(message = "The payment date can't be empty")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime paymentDate;
+    @JsonFormat(pattern = "ddMMyyyy HH:mm:ss")
+    private Date paymentDate;
 }

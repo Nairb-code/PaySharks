@@ -1,8 +1,6 @@
 package com.bripay.accountservice.api.client;
 
-import com.bripay.commonsservice.dto.AccountDto;
 import com.bripay.commonsservice.dto.UserDto;
-import com.bripay.commonsservice.entity.AccountEntity;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +16,7 @@ public interface IUserClientFeign {
 
     /** Obtener Usuario por Username. **/
     @GetMapping("/api/v1/users/username/{username}")
-        public ResponseEntity<UserDto> findByUsername(@PathVariable String username); //modificar responseEntity por Optional.
+    public ResponseEntity<UserDto> findByUsername(@PathVariable String username);
 
     /** Obtener todas los Usuarios.  **/
     @GetMapping("/api/v1/users")

@@ -7,13 +7,17 @@ import com.bripay.commonsservice.exception.ResourceNotFoundException;
 import com.bripay.paymentservice.api.client.IAccountClientFeign;
 import com.bripay.paymentservice.repository.PaymentRepository;
 import com.bripay.paymentservice.service.IPaymentService;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,10 +49,40 @@ public class PaymentService implements IPaymentService {
     }
 
     @Override
-    public PaymentDto save(PaymentDto paymentDto) {
+    public List<PaymentDto> findAllBySenderAccount(String senderAccount) {
+        boolean existsSenderAccount = paymentRepository.existsBySenderAccount(senderAccount);
+        boolean existsBeneficiaryAccount = paymentRepository.existsByBeneficiaryAccount(senderAccount);
 
+        if (!existsSenderAccount){
+            if (!existsBeneficiaryAccount){
+                throw new ResourceNotFoundException("The account " + senderAccount + " is not registered.");
+            }
+            throw new RuntimeException("There are no payments registered with the account '" + senderAccount+  "'");
+        }
+
+        List<PaymentEntity> listAccountEntity = paymentRepository.findAllBySenderAccount(senderAccount);
+
+        return listAccountEntity.stream()
+                .map(accountEntity -> mapper.convertValue(accountEntity, PaymentDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PaymentDto> findPaymentByDateRange(Date fromDate, Date toDate) {
+        // Buscar pagos por rango de fechas
+        List<PaymentEntity> paymentEntities = paymentRepository.findByPaymentDateBetween(fromDate, toDate);
+
+        return paymentEntities
+                .stream()
+                .map(paymentEntity -> mapper.convertValue(paymentEntity, PaymentDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PaymentDto save(PaymentDto paymentDto) {
         // 1. Consultar si existe la cuenta beneficiaria, sino arrojar Excepcion.
         ResponseEntity<AccountDto> beneficiaryAccount = accountClientFeign.findByNumberAccount(paymentDto.getBeneficiaryAccount());
+
         if (beneficiaryAccount.getStatusCode() != HttpStatus.OK || beneficiaryAccount.getBody() == null){
             throw new ResourceNotFoundException("Account '" + paymentDto.getBeneficiaryAccount() + "' is not registered.");
         }
@@ -58,8 +92,6 @@ public class PaymentService implements IPaymentService {
         if (senderAccount.getStatusCode() != HttpStatus.OK || senderAccount.getBody() == null){
             throw new ResourceNotFoundException("Account '" + paymentDto.getSenderAccount()+ "' is not registered.");
         }
-
-
 
         double senderCashAvailable = senderAccount.getBody().getCashAvailable() - paymentDto.getAmount();
 
@@ -74,6 +106,8 @@ public class PaymentService implements IPaymentService {
 
         accountClientFeign.update(senderAccount.getBody());
         accountClientFeign.update(beneficiaryAccount.getBody());
+
+        paymentDto.setPaymentDate(new Date());
 
         // 3. Convertir paymentDto a PaymentEntity
         PaymentEntity paymentEntity = mapper.convertValue(paymentDto, PaymentEntity.class);

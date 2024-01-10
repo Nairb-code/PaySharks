@@ -3,13 +3,12 @@ package com.bripay.accountservice.service.impl;
 import com.bripay.accountservice.api.client.IUserClientFeign;
 import com.bripay.accountservice.repository.AccountRepository;
 import com.bripay.accountservice.service.IAccountService;
-
 import com.bripay.commonsservice.dto.AccountDto;
 import com.bripay.commonsservice.dto.UserDto;
 import com.bripay.commonsservice.entity.AccountEntity;
-import com.bripay.commonsservice.entity.UserEntity;
 import com.bripay.commonsservice.exception.DuplicateResourceException;
 import com.bripay.commonsservice.exception.ResourceNotFoundException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,16 +38,13 @@ public class AccountService implements IAccountService{
                 () -> new ResourceNotFoundException("The account with ID = " + id + " is not registered.")
         );
 
-        AccountDto accountDto = mapper.convertValue(accountEntity, AccountDto.class);
-
-        System.out.println(accountDto);
-        return accountDto;
+        return mapper.convertValue(accountEntity, AccountDto.class);
     }
 
     @Override
-    public AccountDto findByNumberAccount(String numberAcount) {
-        AccountEntity accountEntity = accountRepository.findByNumberAccount(numberAcount).orElseThrow(
-                () -> new ResourceNotFoundException("The account '" + numberAcount + "' is not registered.")
+    public AccountDto findByNumberAccount(String numberAccount) {
+        AccountEntity accountEntity = accountRepository.findByNumberAccount(numberAccount).orElseThrow(
+                () -> new ResourceNotFoundException("The account '" + numberAccount + "' is not registered.")
         );
 
         return mapper.convertValue(accountEntity, AccountDto.class);
@@ -81,16 +77,14 @@ public class AccountService implements IAccountService{
     /** Sección de Registro.    **/
     @Override
     public AccountDto save(AccountDto accountDto) {
-
         Optional<AccountEntity> existAccountEntity = accountRepository.findByNumberAccount(accountDto.getNumberAccount());
 
         existAccountEntity.ifPresent( x -> {
             throw new ResourceNotFoundException("The account with number account = " + accountDto.getNumberAccount() + " is registered.");
         });
 
-        // llamar el endpoint (/api/v1/users/username/{username}
-        ResponseEntity<UserDto> responseUserDto = userClientFeign.findByUsername(accountDto.getUsername());
-        UserDto userDto = responseUserDto.getBody();
+        // Validar que el username existe
+        userClientFeign.findByUsername(accountDto.getUsername());
 
         AccountEntity accountEntity = mapper.convertValue(accountDto, AccountEntity.class);
 
@@ -104,7 +98,7 @@ public class AccountService implements IAccountService{
         AccountEntity existingAccountEntity = accountRepository.findById(accountDto.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Account with ID " + accountDto.getId() + " not found"));
 
-        // llamar el endpoint (/api/v1/users/username/{username}
+        // Validar que el username existe
         userClientFeign.findByUsername(accountDto.getUsername());
 
         // Verificar si el nuevo número de cuenta ya está registrado para otro usuario (excluyendo al usuario actual)

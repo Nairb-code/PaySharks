@@ -37,7 +37,7 @@ public class UserService implements IUserService {
         UserEntity userEntity = userRepositoy.findByUsername(username);
 
         if (userEntity == null) {
-            throw new ResourceNotFoundException("The username " + username + "is not registered.");
+            throw new ResourceNotFoundException("The username " + username + " is not registered.");
         }
 
         return mapper.convertValue(userEntity, UserDto.class);
