@@ -10,10 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter @Setter
@@ -42,6 +40,7 @@ public class PaymentDto implements Serializable {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
+    //@Pattern(regexp = "\\d{8} \\d{2}:\\d{2}:\\d{2}", message = "Invalid date format. Use 'ddMMyyyy HH:mm:ss'")
     @JsonFormat(pattern = "ddMMyyyy HH:mm:ss")
     private Date paymentDate;
 }

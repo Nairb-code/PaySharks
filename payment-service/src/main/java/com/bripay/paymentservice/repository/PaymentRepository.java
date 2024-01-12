@@ -2,6 +2,7 @@ package com.bripay.paymentservice.repository;
 
 import com.bripay.commonsservice.dto.PaymentDto;
 import com.bripay.commonsservice.entity.PaymentEntity;
+import com.bripay.commonsservice.enums.PaymentMethod;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +14,7 @@ import java.util.Optional;
 public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
     boolean existsBySenderAccount(String senderAccount);
     boolean existsByBeneficiaryAccount(String beneficiaryAccount);
+    List<PaymentEntity> findAllByPaymentMethod(PaymentMethod paymentMethod);
     List<PaymentEntity> findAllBySenderAccount(String senderAccount);
     List<PaymentEntity> findByPaymentDateBetween(Date fromDate, Date toDate);
 }

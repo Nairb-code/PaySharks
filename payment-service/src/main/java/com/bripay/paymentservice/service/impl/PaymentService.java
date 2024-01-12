@@ -3,6 +3,8 @@ package com.bripay.paymentservice.service.impl;
 import com.bripay.commonsservice.dto.AccountDto;
 import com.bripay.commonsservice.dto.PaymentDto;
 import com.bripay.commonsservice.entity.PaymentEntity;
+import com.bripay.commonsservice.enums.PaymentMethod;
+import com.bripay.commonsservice.exception.NullOrEmptyFieldException;
 import com.bripay.commonsservice.exception.ResourceNotFoundException;
 import com.bripay.paymentservice.api.client.IAccountClientFeign;
 import com.bripay.paymentservice.repository.PaymentRepository;
@@ -15,8 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,7 +69,31 @@ public class PaymentService implements IPaymentService {
     }
 
     @Override
+    public List<PaymentDto> findAllByPaymentMethod(PaymentMethod paymentMethod) {
+        List<PaymentEntity> listPaymentEntity = paymentRepository.findAllByPaymentMethod(paymentMethod);
+
+
+        return listPaymentEntity.stream()
+                .map( paymentEntity -> mapper.convertValue(paymentEntity, PaymentDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<PaymentDto> findPaymentByDateRange(Date fromDate, Date toDate) {
+        if (fromDate == null || toDate == null){
+            throw new NullOrEmptyFieldException("The Dates [ fromDate - toDate ] to consult can't be Null o Empty");
+        }
+
+        if (fromDate.compareTo(toDate) > 0){
+            throw new IllegalArgumentException("The field fromDate must be before toDate");
+        }
+
+        // Incrementar la fecha toDate en un día para incluir todos los pagos hasta el final de toDate
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(toDate);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        toDate = calendar.getTime();
+
         // Buscar pagos por rango de fechas
         List<PaymentEntity> paymentEntities = paymentRepository.findByPaymentDateBetween(fromDate, toDate);
 
@@ -107,7 +132,7 @@ public class PaymentService implements IPaymentService {
         accountClientFeign.update(senderAccount.getBody());
         accountClientFeign.update(beneficiaryAccount.getBody());
 
-        paymentDto.setPaymentDate(new Date());
+        //paymentDto.setPaymentDate(new Date());
 
         // 3. Convertir paymentDto a PaymentEntity
         PaymentEntity paymentEntity = mapper.convertValue(paymentDto, PaymentEntity.class);

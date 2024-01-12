@@ -65,6 +65,11 @@ public class AccountService implements IAccountService{
     @Override
     public List<AccountDto> findAllAccountByUsername(String username) {
         List<AccountEntity> listAccountEntity = accountRepository.findAllByUsername(username);
+
+        if (listAccountEntity.isEmpty()){
+            throw new ResourceNotFoundException("The username '" + username + "' is not registered.");
+        }
+
         List<AccountDto> listAccountDto = new ArrayList<>();
 
         listAccountEntity.forEach(accountEntity -> {

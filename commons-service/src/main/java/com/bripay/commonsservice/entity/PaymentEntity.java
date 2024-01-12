@@ -40,6 +40,7 @@ public class PaymentEntity {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
+    //@Pattern(regexp = "\\d{8} \\d{2}:\\d{2}:\\d{2}", message = "Invalid date format. Use 'ddMMyyyy HH:mm:ss'")
     @JsonFormat(pattern = "ddMMyyyy HH:mm:ss")
     private Date paymentDate;
 }

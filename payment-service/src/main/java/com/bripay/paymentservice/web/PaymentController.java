@@ -1,6 +1,7 @@
 package com.bripay.paymentservice.web;
 
 import com.bripay.commonsservice.dto.PaymentDto;
+import com.bripay.commonsservice.enums.PaymentMethod;
 import com.bripay.paymentservice.service.IPaymentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +32,16 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.findAll());
     }
 
+    @GetMapping("/findByPaymentMethod")
+    public ResponseEntity<List<PaymentDto>> findPaymentsByPaymentMethod(@RequestParam @Valid PaymentMethod paymentMethod) {
+        List<PaymentDto> payments = paymentService.findAllByPaymentMethod(paymentMethod);
+        return ResponseEntity.ok(payments);
+    }
+
     @GetMapping("/findByDateRange")
     public ResponseEntity<List<PaymentDto>> findPaymentsByDateRange(
-            @RequestParam @DateTimeFormat(pattern = "ddMMyyyy") Date fromDate,
-            @RequestParam @DateTimeFormat(pattern = "ddMMyyyy") Date toDate) {
+            @RequestParam @DateTimeFormat(pattern = "ddMMyyyy") @Valid Date fromDate,
+            @RequestParam @DateTimeFormat(pattern = "ddMMyyyy") @Valid Date toDate) {
         List<PaymentDto> payments = paymentService.findPaymentByDateRange(fromDate, toDate);
         return ResponseEntity.ok(payments);
     }
