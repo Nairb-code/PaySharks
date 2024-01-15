@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: user-service
+        uri: lb://user-service
+        predicates:
+        - Path=/api/users/**
+        filters:
+        - StripPrefix=2
+
+      - id: account-service
+        uri: lb://account-service
+        predicates:
+          - Path=/api/accounts/**
+        filters:
+          - StripPrefix=2
