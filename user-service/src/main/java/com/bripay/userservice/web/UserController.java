@@ -5,12 +5,14 @@ import com.bripay.commonsservice.dto.UserDto;
 import com.bripay.userservice.service.IUserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RefreshScope
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
