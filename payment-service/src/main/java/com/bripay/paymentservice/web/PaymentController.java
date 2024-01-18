@@ -5,6 +5,7 @@ import com.bripay.commonsservice.enums.PaymentMethod;
 import com.bripay.paymentservice.service.IPaymentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 
+@RefreshScope
 @RestController
 @RequestMapping("/api/v1/payment")
 public class PaymentController {
