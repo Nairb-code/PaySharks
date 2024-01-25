@@ -5,20 +5,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/home")
 public class HomeController {
-
     @GetMapping
+    public String root() {
+        return "Welcome";
+    }
+    @GetMapping("/api/v1/home")
     public String publico() {
         return "¡Hola, este es un endpoint público!";
     }
 
-    @GetMapping("/protegido")
+    @GetMapping("/api/v1/home/protegido")
     public String protegido() {
         return "¡Hola, este endpoint requiere autenticación!";
     }
 
-    @GetMapping("/admin")
+    @GetMapping("/api/v1/home/admin")
     public String admin() {
         return "¡Hola, este endpoint requiere permiso de administrador!";
     }
