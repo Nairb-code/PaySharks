@@ -1,30 +1,33 @@
 package com.bripay.oauthservice.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
+import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Autowired
-    private CustomGrantedAuthoritiesMapper customGrantedAuthoritiesMapper;
 
     /** Cargar detalles del usuario en la memoria, utilizando InMemoryUserDetailsManager**/
     @Bean
@@ -63,37 +66,39 @@ public class SecurityConfig {
                 .and()
                 .httpBasic()
                 .and()
-                .oauth2Login(oauth2Login ->
-                        oauth2Login
-                                .userInfoEndpoint(userInfoEndpoint ->
-                                        userInfoEndpoint
-                                                .userAuthoritiesMapper(customGrantedAuthoritiesMapper)
-                                ))
+                .oauth2Login(withDefaults())
                 .oauth2Client(withDefaults())
                 .build();
     }
 
     @Bean
-    public ClientRegistrationRepository clientRegistrationRepository() {
-        return new InMemoryClientRegistrationRepository(
-                googleClientRegistration()
-        );
-    }
+    public GrantedAuthoritiesMapper userAuthoritiesMapper() {
+        return (authorities) -> {
+            Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
 
-    private ClientRegistration googleClientRegistration() {
-        return ClientRegistration.withRegistrationId("google")
-                .clientId("62423101959-a3j5j23kif3pemhqcddhbfe3p906uilk.apps.googleusercontent.com")
-                .clientSecret("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")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
-                .scope("openid", "profile", "email")
-                .authorizationUri("https://accounts.google.com/o/oauth2/auth")
-                .tokenUri("https://www.googleapis.com/oauth2/v4/token")
-                .userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo")
-                .userNameAttributeName("email")
-                .jwkSetUri("https://www.googleapis.com/oauth2/v3/certs")
-                .clientName("Google")
-                .build();
+            authorities.forEach(authority -> {
+                if (OidcUserAuthority.class.isInstance(authority)) {
+                    OidcUserAuthority oidcUserAuthority = (OidcUserAuthority)authority;
+
+                    OidcIdToken idToken = oidcUserAuthority.getIdToken();
+                    OidcUserInfo userInfo = oidcUserAuthority.getUserInfo();
+
+                    // Map the claims found in idToken and/or userInfo
+                    // to one or more GrantedAuthority's and add it to mappedAuthorities
+                    mappedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
+                } else if (OAuth2UserAuthority.class.isInstance(authority)) {
+                    OAuth2UserAuthority oauth2UserAuthority = (OAuth2UserAuthority)authority;
+
+                    Map<String, Object> userAttributes = oauth2UserAuthority.getAttributes();
+
+                    // Map the attributes found in userAttributes
+                    // to one or more GrantedAuthority's and add it to mappedAuthorities
+                    mappedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                }
+            });
+
+            return mappedAuthorities;
+        };
     }
 }
