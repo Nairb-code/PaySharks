@@ -1,6 +1,7 @@
 package com.bripay.accountservice.web;
 
 import com.bripay.accountservice.service.IAccountService;
+import com.bripay.accountservice.service.impl.AccountService;
 import com.bripay.commonsservice.dto.AccountDto;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

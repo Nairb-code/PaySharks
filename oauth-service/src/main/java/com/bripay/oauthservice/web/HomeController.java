@@ -1,15 +1,16 @@
 package com.bripay.oauthservice.web;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HomeController {
     @GetMapping
-    public String root() {
-        return "Welcome";
+    public String root(Authentication authentication) {
+        return "Welcome " + authentication.getName() + " - " + authentication.getAuthorities().toString() + "Pricipal: " + authentication.getPrincipal().toString() + "Details: " + authentication.getDetails().toString() + "Credentials: " + authentication.getCredentials().toString();
     }
+
     @GetMapping("/api/v1/home")
     public String publico() {
         return "¡Hola, este es un endpoint público!";
