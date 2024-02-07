@@ -77,6 +77,7 @@ public class SecurityConfig {
                 )
                 // Form login handles the redirect to the login page from the
                 // authorization server filter chain
+
                 //.csrf( csrf -> csrf.disable())
                 .formLogin(Customizer.withDefaults());
 
@@ -106,6 +107,7 @@ public class SecurityConfig {
                 .redirectUri("http://127.0.0.1:8080/authorized")
                 .scope("read")
                 .scope("write")
+                .scope("USER")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
                 .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())

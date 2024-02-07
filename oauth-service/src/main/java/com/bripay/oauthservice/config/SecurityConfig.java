@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -29,7 +30,29 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    /** Cargar detalles del usuario en la memoria, utilizando InMemoryUserDetailsManager**/
+    /** IMplementando filtro de seguridad. Autenticación y autorización.   **/
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .authorizeHttpRequests()
+                .requestMatchers("/api/v1/home", "/authorized").permitAll()
+                .requestMatchers("/api/v1/home/protegido").hasAnyAuthority("SCOPE_USER")
+                .requestMatchers("/api/v1/home/admin").hasAnyAuthority("SCOPE_read", "SCOPE_write")
+                .anyRequest().authenticated()
+                .and()
+                .sessionManagement((session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)))
+                .formLogin().permitAll()
+                .and()
+                .httpBasic()
+                .and()
+                .oauth2Login(login -> login.loginPage("/oauth2/authorization/react-app"))
+                .oauth2Client(withDefaults())
+                .oauth2ResourceServer(resourceServer -> resourceServer.jwt(withDefaults()))
+                .build();
+    }
+
+    /*
     @Bean
     public UserDetailsService userDetailsService() {
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -51,25 +74,7 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user, admin);
     }
 
-    /** IMplementando filtro de seguridad. Autenticación y autorización.   **/
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                .authorizeHttpRequests()
-                .requestMatchers("/api/v1/home").permitAll()
-                .requestMatchers("/api/v1/home/protegido").hasRole("USER")
-                .requestMatchers("/api/v1/home/admin").hasRole("ADMIN")
-                .anyRequest().authenticated()
-                .and()
-                .formLogin().permitAll()
-                .and()
-                .httpBasic()
-                .and()
-                .oauth2Login(withDefaults())
-                .oauth2Client(withDefaults())
-                .build();
-    }
 
     @Bean
     public GrantedAuthoritiesMapper userAuthoritiesMapper() {
@@ -101,4 +106,5 @@ public class SecurityConfig {
             return mappedAuthorities;
         };
     }
+    */
 }
