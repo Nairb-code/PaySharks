@@ -1,68 +1,37 @@
 package com.bripay.oauthservice.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
-import java.security.Principal;
-
+import java.util.Collections;
+import java.util.Map;
 
 @RestController
 public class HomeController {
-    @Autowired
-    private OAuth2AuthorizedClientService authorizedClientService;
-
-    @GetMapping("/message")
-    public String message(Principal principal) {
-        var restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        String accessToken = authorizedClientService
-                .loadAuthorizedClient("react-app", principal.getName())
-                .getAccessToken().getTokenValue();
-        httpHeaders.set("Authorization", "Bearer " + accessToken);
-
-        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-        ResponseEntity<String> response =
-                restTemplate.exchange("http://localhost:8181/hello", HttpMethod.GET, entity, String.class);
-        return "Success  :: " + response.getBody();
+    @GetMapping("/authorized")
+    public Map<String, String> authorized(@RequestParam String code){
+        return Collections.singletonMap("code" , code);
     }
 
-    @GetMapping("/getInfoUser")
-    public String getInfoUser(Principal principal){
-        var restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        String accessToken = authorizedClientService
-                .loadAuthorizedClient("react-app", principal.getName())
-                .getAccessToken().getTokenValue();
-        httpHeaders.set("Authorization", "Bearer " + accessToken);
-
-        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-        ResponseEntity<String> response =
-                restTemplate.exchange("http://localhost:8181/api/v1/home/protegido", HttpMethod.GET, entity, String.class);
-        return "Welcome brian :: " + response.getBody();
+    @GetMapping
+    public String root(Authentication authentication) {
+        return "Welcome " + authentication.getName() + " - " + authentication.getAuthorities().toString() + "Pricipal: " + authentication.getPrincipal().toString() + "Details: " + authentication.getDetails().toString() + "Credentials: " + authentication.getCredentials().toString();
     }
-    @GetMapping("/getInfoAdmin")
-    public String getInfoAdmin(Principal principal){
-        var restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        String accessToken = authorizedClientService
-                .loadAuthorizedClient("react-app", principal.getName())
-                .getAccessToken().getTokenValue();
-        httpHeaders.set("Authorization", "Bearer " + accessToken);
 
-        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-        ResponseEntity<String> response =
-                restTemplate.exchange("http://localhost:8181/api/v1/home/admin", HttpMethod.GET, entity, String.class);
-        return "Welcome admin :: " + response.getBody();
+    @GetMapping("/api/v1/home")
+    public String publico() {
+        return "¡Hola, este es un endpoint público!";
     }
-    @GetMapping("/public")
-    public String publicMessage(){
-        return "Este es un endpoint publico :: desde OAuth Client";
+
+    @GetMapping("/api/v1/home/protegido")
+    public String protegido() {
+        return "¡Hola, este endpoint requiere autenticación!";
+    }
+
+    @GetMapping("/api/v1/home/admin")
+    public String admin() {
+        return "¡Hola, este endpoint requiere permiso de administrador!";
     }
 }

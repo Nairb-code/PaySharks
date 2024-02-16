@@ -1,17 +1,2 @@
 server:
   port: 9000
-spring:
-  output.ansi.enabled: ALWAYS
-  security:
-    oauth2:
-      authorizationserver:
-        client:
-          demo-client:
-            require-authorization-consent: true
-            registration:
-              client-id: react-app
-              client-secret: "{noop}password"
-              authorization-grant-types: client_credentials,authorization_code,refresh_token
-              redirect-uris: http://127.0.0.1:8080/login/oauth2/code/react-app
-              scopes: user.read,user.write,openid,write,read
-              client-authentication-methods: client_secret_basic
