@@ -1,25 +1,19 @@
 server:
   port: 8080
-
 spring:
+  output.ansi.enabled: ALWAYS
   security:
     oauth2:
-      resourceserver:
-        jwt: #indicamos que vamos a proteger nuestras rutas con jwt.
-          issuer-uri: "http://127.0.0.1:9000" #Nuestro servidor de authorizaion se encarga de validar el token
       client:
+        provider:
+          spring:
+            issuer-uri: http://localhost:9000
         registration:
           react-app:
             provider: spring
             client-id: react-app
-            client-secret: admin
+            client-secret: "password"
             authorization-grant-type: authorization_code
-            redirect-uri: "http://127.0.0.1:8080/authorized" #a que endpoint se va ir nuestro codigo de authorization
-            scope:
-              - openid #sin esto no podemos iniciar sesion
-              - profile
-              - USER
-            client-name: react-app
-        provider:
-          spring:
-            issuer-uri: "http://127.0.0.1:9000" # ip del servidor de authorization
+            client-authentication-method: client_secret_basic
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: user.read,openid,read
