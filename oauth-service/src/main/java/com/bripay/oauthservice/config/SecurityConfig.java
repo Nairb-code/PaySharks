@@ -47,35 +47,12 @@ public class SecurityConfig {
                 .httpBasic()
                 .and()
                 .oauth2Login(login -> login.loginPage("/oauth2/authorization/react-app"))
-                .oauth2Client(withDefaults())
+                .oauth2Client(withDefaults()).csrf( csrf -> csrf.disable())
                 .oauth2ResourceServer(resourceServer -> resourceServer.jwt(withDefaults()))
                 .build();
     }
 
     /*
-    @Bean
-    public UserDetailsService userDetailsService() {
-        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
-        UserDetails user = User.withUsername("user")
-                .password(encoder.encode("1234"))
-                .roles("USER")
-                .build();
-
-
-        UserDetails admin = User.withUsername("admin")
-                .password(encoder.encode("admin"))
-                .roles("ADMIN")
-                .build();
-        // Imprimir contraseñas en consola
-        System.out.println("Password for user: " + user.getPassword());
-        System.out.println("Password for admin: " + admin.getPassword());
-
-        return new InMemoryUserDetailsManager(user, admin);
-    }
-
-
-
     @Bean
     public GrantedAuthoritiesMapper userAuthoritiesMapper() {
         return (authorities) -> {
