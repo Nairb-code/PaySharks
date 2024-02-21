@@ -15,3 +15,39 @@ spring:
           - Path=/api/accounts/**
         filters:
           - StripPrefix=2
+
+      - id: oauth-server
+        uri: lb://oauth-server
+        predicates:
+          - Path=/api/oauth/**
+        filters:
+          - StripPrefix=2
+
+      - id: oauth-service
+        uri: lb://oauth-service
+        predicates:
+          - Path=/api/oauth-service/**
+        filters:
+          - StripPrefix=2
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt: #indicamos que vamos a proteger nuestras rutas con jwt.
+          issuer-uri: "http://127.0.0.1:9000" #Nuestro servidor de authorizaion se encarga de validar el token
+      client:
+        registration:
+          react-app:
+            provider: spring
+            client-id: react-app
+            client-secret: admin
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://127.0.0.1:8090/authorized" #a que endpoint se va ir nuestro codigo de authorization
+            scope:
+              - openid #sin esto no podemos iniciar sesion
+              - profile
+              - ADMIN
+            client-name: react-app
+        provider:
+          spring:
+            issuer-uri: "http://127.0.0.1:9000" # ip del servidor de authorization

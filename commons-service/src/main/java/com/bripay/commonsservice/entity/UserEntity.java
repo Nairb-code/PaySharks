@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
@@ -36,4 +38,13 @@ public class UserEntity {
 
     @Column(columnDefinition = "TINYINT", nullable = false)
     private boolean available;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable( name = "usuarios_roles",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"),
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"usuario_id", "role_id"})}
+    )
+    private List<RoleEntity> roles;
+
 }

@@ -1,6 +1,8 @@
 package com.bripay.commonsservice.dto;
 
-import jakarta.persistence.Column;
+import com.bripay.commonsservice.entity.RoleEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -10,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
@@ -33,4 +36,6 @@ public class UserDto implements Serializable {
 
     @Column(columnDefinition = "TINYINT", nullable = false)
     private boolean available;
+
+    private List<RoleEntity> roles;
 }

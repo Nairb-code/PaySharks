@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: oauth-service
   security:
     oauth2:
       resourceserver:
@@ -18,7 +20,7 @@ spring:
             scope:
               - openid #sin esto no podemos iniciar sesion
               - profile
-              - USER
+              - ADMIN
             client-name: react-app
         provider:
           spring:
