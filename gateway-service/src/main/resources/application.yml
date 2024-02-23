@@ -16,6 +16,13 @@ spring:
         filters:
           - StripPrefix=2
 
+      - id: payment-service
+        uri: lb://payment-service
+        predicates:
+          - Path=/api/payment/**
+        filters:
+          - StripPrefix=2
+
       - id: oauth-server
         uri: lb://oauth-server
         predicates:
@@ -44,10 +51,10 @@ spring:
             authorization-grant-type: authorization_code
             redirect-uri: "http://127.0.0.1:8090/authorized" #a que endpoint se va ir nuestro codigo de authorization
             scope:
-              - openid #sin esto no podemos iniciar sesion
-              - profile
-              - ADMIN
-            client-name: react-app
+              #- openid #sin esto no podemos iniciar sesion
+              #- profile
+              #- ADMIN
+            #client-name: react-app
         provider:
           spring:
             issuer-uri: "http://127.0.0.1:9000" # ip del servidor de authorization

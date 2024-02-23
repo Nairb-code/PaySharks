@@ -1,5 +1,5 @@
-INSERT INTO role_entity (nombre) VALUES ('ROLE_ADMIN');
-INSERT INTO role_entity (nombre) VALUES ('ROLE_USER');
+INSERT INTO role_entity (nombre) VALUES ('ADMIN');
+INSERT INTO role_entity (nombre) VALUES ('USER');
 
 INSERT INTO user_entity (username, email, password, available) VALUES ("brian", "brian@correo.com", "12345", true);
 INSERT INTO user_entity (username, email, password, available) VALUES ("gise", "gise@correo.com", "12345", true);

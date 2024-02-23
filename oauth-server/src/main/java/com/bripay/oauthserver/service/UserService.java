@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService implements UserDetailsService, IUserService{
     @Autowired
     private IUserFeignClient userFeignClient;
 
@@ -30,10 +30,16 @@ public class UserService implements UserDetailsService {
         // verificar si el usuario existe, sino lanzar excepción.
 
         List<GrantedAuthority> authorities = userDto.getRoles()
-                .stream().map( role -> new SimpleGrantedAuthority(role.getNombre()))
+                .stream()
+                .map( role -> new SimpleGrantedAuthority(role.getNombre()))
                 .peek(authoritie -> logger.info("Role: " + authoritie.getAuthority()))
                 .collect(Collectors.toList());
 
         return new User(userDto.getUsername(), "{noop}" + userDto.getPassword(), true, true, true, true, authorities);
+    }
+
+    @Override
+    public UserDto findByUsername(String username) {
+        return userFeignClient.findByUsername(username).getBody();
     }
 }
